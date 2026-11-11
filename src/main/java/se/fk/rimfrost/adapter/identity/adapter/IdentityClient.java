@@ -1,5 +1,8 @@
 package se.fk.rimfrost.adapter.identity.adapter;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.rest.client.reactive.jackson.ClientObjectMapper;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -19,4 +22,10 @@ public interface IdentityClient
    @Path("/identity")
    @ClientHeaderParam(name = HttpHeaders.AUTHORIZATION, value = "{authorizationHeaderValue}")
    GetIdentityResponse getIdentity(String authorizationHeaderValue);
+
+   @ClientObjectMapper
+   static ObjectMapper objectMapper(ObjectMapper defaultObjectMapper)
+   {
+      return defaultObjectMapper.copy().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+   }
 }

@@ -16,6 +16,7 @@ import se.fk.rimfrost.adapter.identity.exception.IdentityException;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -152,5 +153,22 @@ public class IdentityAdapterTest
 
       var exception = assertThrows(IdentityException.class, () -> identityAdapter.getIdentity(null));
       assertEquals(IdentityException.ErrorType.UNAUTHORIZED, exception.getErrorType());
+   }
+
+   @Test
+   @DisplayName("IDENT-FR-01.8: Unknown properties in response should be ignored")
+   void should_ignore_unknown_properties_on_success() throws IdentityException
+   {
+      String expectedTypId = UUID.randomUUID().toString();
+      String expectedValue = UUID.randomUUID().toString();
+      String expectedHeaderValue = "Bearer " + expectedTypId + ":" + expectedValue;
+
+      server.stubFor(WireMock.get(WireMock.urlPathEqualTo("/identity"))
+            .withHeader(HttpHeaders.AUTHORIZATION, WireMock.equalTo(expectedHeaderValue))
+            .willReturn(WireMock.aResponse().withHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+                  .withBody("{\"identity\": {\"typId\": \"" + expectedTypId + "\", \"varde\": \"" + expectedValue
+                        + "\"}, \"unknown-property\":\"some-value\"}")));
+
+      assertDoesNotThrow(() -> identityAdapter.getIdentity(expectedHeaderValue));
    }
 }
