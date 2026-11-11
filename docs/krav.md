@@ -18,3 +18,4 @@ som ett typat Java-API för konsumenter inom Rimfrost.
 - **IDENT-FR-01.5** Om identity-tjänsten svarar med HTTP 503 ska adaptern kasta ett `IdentityException` med `ErrorType.SERVICE_UNAVAILABLE`.
 - **IDENT-FR-01.6** Vid övriga HTTP-fel eller kommunikationsfel ska adaptern kasta ett `IdentityException` med `ErrorType.UNEXPECTED_ERROR`.
 - **IDENT-FR-01.7** Adaptern ska inte skicka `Authorized`-header ifall det givna header-värdet är null.
+- **IDENT-FR-01.8** Adaptern ska ignorera eventuella okända attribut i svaret vid hämtning av identitet.
